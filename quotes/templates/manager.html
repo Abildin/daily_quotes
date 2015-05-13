@@ -4,32 +4,27 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>DailyQuotes</title>
+    {% load staticfiles %}
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="static/bower_components/normalize-css/normalize.css" />
-    <link rel="stylesheet" href="static/bower_components/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="static/bower_components/bootstrap-material-design/dist/css/material.css" />
-    <link rel="stylesheet" href="static/bower_components/bootstrap-material-design/dist/css/ripples.css" />
-    <link rel="stylesheet" href="static/styles/app.css">
-    <script src="static/bower_components/modernizr/modernizr.js"></script>
+    <link rel="stylesheet" href="{% static 'bower_components/normalize-css/normalize.css' %}" />
+    <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.css' %}" />
+    <link rel="stylesheet" href="{% static 'bower_components/bootstrap-material-design/dist/css/material.css' %}" />
+    <link rel="stylesheet" href="{% static 'bower_components/bootstrap-material-design/dist/css/ripples.css' %}" />
+    <link rel="stylesheet" href="{% static 'styles/app.css' %}">
+    <script src="{% static 'bower_components/modernizr/modernizr.js' %}"></script>
   </head>
   <body ng-app="mainApp" ng-controller="MainCtrl as ctrl" ng-init="ctrl.init('http://localhost:8000')">
     <div class="container-fluid">
       <div class="row">
         <div class="navbar navbar-success">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="javascript:void(0)">DailyQuotes <small>admin</small></a>
-            </div>
-
-            <div class="navbar-collapse collapse navbar-responsive-collapse">
-              <form class="navbar-form navbar-left">
-                  <input type="text" class="form-control col-lg-8" placeholder="Search">
-              </form>
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="javascript:void(0)">DailyQuotes <small>admin</small></a>
             </div>
             <!--
             <div class="navbar-collapse collapse navbar-responsive-collapse">
@@ -72,9 +67,19 @@
       <div class="row">
         <div class="col-lg-8">
           <div class="panel panel-success">
-            <div class="panel-heading">
+            <div class="panel-heading" style="padding: 0;">
               <div class="panel-title">
-                <h4>Quotes</h4>
+                <div class="navbar navbar-success" style="margin-bottom: 0;">
+                  <div class="navbar-collapse collapse navbar-responsive-collapse">
+                    <h4 class="navbar-text">Quotes</h4>
+                    <form class="navbar-form navbar-left">
+                      <input ng-model="ctrl.search" type="text" class="form-control col-lg-8" placeholder="Search">
+                    </form>
+                    <ul class="nav navbar-nav navbar-right">
+                      <li class="active" ng-click="ctrl.add()"><a>Add</a></li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="panel-body">
@@ -91,7 +96,7 @@
                   </th>
                 </thead>
                 <tbody>
-                  <tr ng-repeat="quote in ctrl.quotes" ng-click="ctrl.select(quote)">
+                  <tr ng-repeat="quote in ctrl.quotes | filter : ctrl.search" ng-click="ctrl.select(quote)">
                     <td>{[{ quote.date }]}</td>
                     <td>{[{ quote.quote }]}</td>
                     <td>{[{ quote.source }]}</td>
@@ -110,17 +115,17 @@
             </div>
             <div class="panel-body">
               <div class="form-group">
-                <input value="{[{ ctrl.selected.source }]}" class="form-control floating-label" placeholder="Source" type="text">
+                <input ng-model="ctrl.selected.source" value="{[{ ctrl.selected.source }]}" class="form-control floating-label" placeholder="Source" type="text">
               </div>
               <div class="form-group">
-                <input value="{[{ ctrl.selected.quote }]}" class="form-control floating-label" placeholder="Text" type="text">
+                <input ng-model="ctrl.selected.quote" value="{[{ ctrl.selected.quote }]}" class="form-control floating-label" placeholder="Text" type="text">
               </div>
               <div class="form-group">
-                <input value="{[{ ctrl.selected.date }]}" class="form-control floating-label" placeholder="Date" type="date">
+                <input ng-model="ctrl.selected.date" value="{[{ ctrl.selected.date }]}" class="form-control floating-label" placeholder="Date" type="date">
               </div>
               <div class="form-group">
                 <div class="col-lg-6">
-                  <button class="btn btn-danger btn-xs" ng-click="ctrl.delete()">Delete</button>
+                  <button class="btn btn-danger btn-xs" ng-click="ctrl.delete()" ng-if="ctrl.selected.resource_uri">Delete</button>
                 </div>
                 <div class="col-lg-6">
                   <button class="btn btn-success btn-xs pull-right" ng-click="ctrl.save()">Save</button>
@@ -133,12 +138,12 @@
       </div>
     </div>
 
-    <script src="static/bower_components/jquery/dist/jquery.js"></script>
-    <script src="static/bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="static/bower_components/bootstrap-material-design/dist/js/material.js"></script>
-    <script src="static/bower_components/bootstrap-material-design/dist/js/ripples.js"></script>
-    <script src="static/scripts/angularjs/angular.min.js"></script>
-    <script src="static/scripts/app.js"></script>
+    <script src="{% static 'bower_components/jquery/dist/jquery.js' %}"></script>
+    <script src="{% static 'bower_components/bootstrap/dist/js/bootstrap.js' %}"></script>
+    <script src="{% static 'bower_components/bootstrap-material-design/dist/js/material.js' %}"></script>
+    <script src="{% static 'bower_components/bootstrap-material-design/dist/js/ripples.js' %}"></script>
+    <script src="{% static 'scripts/angularjs/angular.min.js' %}"></script>
+    <script src="{% static 'scripts/app.js' %}"></script>
     <script>
       $.material.init();
     </script>
