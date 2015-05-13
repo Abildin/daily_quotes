@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" type="text/css" href="libs/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="libs/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/home.css">
+  </head>
+  <body ng-app="shophere" ng-controller="home as ctrl" ng-init="ctrl.nav_list.home.init()">
+    <div class="col-md-6 col-md-offset-3">
+      <div>
+        <ul class="nav nav-tabs nav-justified">
+          <li role="presentation" ng-repeat="nav_name in ctrl.nav_order" class="{{ ctrl.nav_list[nav_name].active }}" ng-click="ctrl.nav_list[nav_name].init()"><a>{{ ctrl.nav_list[nav_name].title }}</a></li>
+        </ul>
+      </div>
+      <div class="body col-md-12 container-fluid">
+
+        <!-- HOME -->
+        <div ng-if="ctrl.nav_current.name == 'home'">
+          <form role="form" class="col-md-6" name="infoForm" ng-submit="infoForm.$valid && ctrl.nav_list.home.update()">
+            <div class="form-group">
+              <label for="first_name">First name</label>
+              <input class="form-control input-sm" id="first_name" placeholder="First name" ng-model="ctrl.nav_list.home.user.first_name" required disabled>
+            </div>
+            <div class="form-group">
+              <label for="last_name">Last name</label>
+              <input class="form-control input-sm" id="last_name" placeholder="Last name" ng-model="ctrl.nav_list.home.user.last_name" required disabled>
+            </div>
+            <div class="form-group">
+              <label for="city">City</label>
+              <input class="form-control input-sm" id="city" placeholder="City" ng-model="ctrl.nav_list.home.user.city" required disabled>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone</label>
+              <input class="form-control input-sm" id="phone" placeholder="Phone" ng-model="ctrl.nav_list.home.user.phone" required disabled>
+            </div>
+            <div class="btn btn-default col-md-6 col-md-offset-3" ng-click="ctrl.nav_list.home.toggleEditing(true)" ng-hide="ctrl.nav_list.home.editable">Edit</div>
+            <button type="submit" class="btn btn-success col-md-6 col-md-offset-3" ng-show="ctrl.nav_list.home.editable">Save</button>
+          </form>
+          <div class="col-md-6">
+            <form class="panel panel-default" role="form" name="passwordForm" ng-submit="passwordForm.$valid && ctrl.nav_list.home.changePassword()">
+              <div class="panel-heading">
+                <label for="login">Login</label>
+                <input class="form-control input-sm" id="login" placeholder="Login" ng-model="ctrl.nav_list.home.user.login" required disabled>
+              </div>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label for="old_password">Old Password</label>
+                  <input type="password" class="form-control input-sm" id="old_password" placeholder="Old Password" ng-model="ctrl.nav_list.home.password.old" required>
+                </div>
+                <div class="form-group">
+                  <label for="new_password">New Password</label>
+                  <input type="password" class="form-control input-sm" id="new_password" placeholder="New Password" ng-model="ctrl.nav_list.home.password.new" required>
+                </div>
+                <div class="form-group">
+                  <label for="confirm_password">Confirm Password</label>
+                  <input type="password" class="form-control input-sm" id="confirm_password" placeholder="Confirm Password" ng-model="ctrl.nav_list.home.password.confirm" required>
+                </div>
+                <button type="submit" class="btn btn-success col-md-12">Change password</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- CATEGORIES -->
+        <div ng-if="ctrl.nav_current.name == 'categories'">
+          <div class="panel panel-default">
+            <div class="panel-heading col-md-12">
+              <form class="form-inline pull-left" role="form">
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon">Search</div>
+                    <input class="form-control input-sm" id="searchCategory" placeholder="Search" ng-model="ctrl.nav_list.categories.searchText">
+                  </div>
+                </div>
+              </form>
+              <div class="btn btn-success pull-right btn-sm" ng-click="ctrl.nav_list.categories.addCategory()">Add</div>
+            </div>
+            <div class="panel-body col-md-12" ng-if="ctrl.nav_list.categories.action == 'add'">
+              <form class="form-horizontal" role="form" name="addForm" ng-submit="addForm.$valid && ctrl.nav_list.categories.add()">
+                <div class="form-group">
+                  <label for="addCategory_name" class="col-sm-2 control-label">Name</label>
+                  <div class="col-sm-10">
+                    <input class="form-control input-sm" id="addCategory_name" ng-model="ctrl.nav_list.categories.category.name" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="addCategory_description" class="col-sm-2 control-label">Description</label>
+                  <div class="col-sm-10">
+                    <textarea class="form-control input-sm" id="addCategory_description" ng-model="ctrl.nav_list.categories.category.description"  style="resize: vertical;" rows="3" required></textarea>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10">
+                    <div class="btn-toolbar pull-right" role="toolbar">
+                      <div class="btn-group" role="group">
+                        <div class="btn btn-default" ng-click="ctrl.nav_list.categories.cancel()">Cancel</div>
+                      </div>
+                      <div class="btn-group" role="group">
+                        <button class="btn btn-success">Add</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <table class="table" ng-if="ctrl.nav_list.categories.categories_list">
+              <thead>
+                <th>Name</th>
+                <th>Description</th>
+                <th class="text-center">Actions</th>
+              </thead>
+              <tbody>
+                <tr ng-repeat="category in ctrl.nav_list.categories.categories_list | filter : ctrl.nav_list.categories.searchText">
+                  <td ng-hide="ctrl.nav_list.categories.action == 'edit' && ctrl.nav_list.categories.category.id == category.id">
+                    {{ category.name }}
+                  </td>
+                  <td ng-hide="ctrl.nav_list.categories.action == 'edit' && ctrl.nav_list.categories.category.id == category.id">
+                    {{ category.description }}
+                  </td>
+                  <td ng-show="ctrl.nav_list.categories.action == 'edit' && ctrl.nav_list.categories.category.id == category.id">
+                    <input ng-model="ctrl.nav_list.categories.category.name">
+                  </td>
+                  <td ng-show="ctrl.nav_list.categories.action == 'edit' && ctrl.nav_list.categories.category.id == category.id">
+                    <input ng-model="ctrl.nav_list.categories.category.description">
+                  </td>
+                  <td class="text-center col-md-4">
+                    <div ng-hide="(ctrl.nav_list.categories.action == 'edit' || ctrl.nav_list.categories.action == 'delete') && ctrl.nav_list.categories.category.id == category.id">
+                      <button type="button" title="Edit" class="btn btn-default btn-sm" ng-click="ctrl.nav_list.categories.editCategory(category)"><i class="fa fa-pencil"></i></button>
+                      <button type="button" title="Delete" class="btn btn-danger btn-sm" ng-click="ctrl.nav_list.categories.deleteCategory(category)"><i class="fa fa-trash"></i></button>
+                    </div>
+                    <div ng-show="ctrl.nav_list.categories.action == 'edit' && ctrl.nav_list.categories.category.id == category.id">
+                      <button type="button" title="Cancel" class="btn btn-default btn-sm" ng-click="ctrl.nav_list.categories.cancel()">Cancel</button>
+                      <button type="button" title="Save" class="btn btn-success btn-sm" ng-click="ctrl.nav_list.categories.edit()">Save</button>
+                    </div>
+                    <div ng-show="ctrl.nav_list.categories.action == 'delete' && ctrl.nav_list.categories.category.id == category.id">
+                      Are you sure?
+                      <button type="button" title="No" class="btn btn-default btn-sm" ng-click="ctrl.nav_list.categories.cancel()"><i class="fa fa-times"></i></button>
+                      <button type="button" title="Yes" class="btn btn-success btn-sm" ng-click="ctrl.nav_list.categories.delete()"><i class="fa fa-check"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SUPPLIERS -->
+        <div ng-if="ctrl.nav_current.name == 'suppliers'" class="suppliers">
+          <div class="panel panel-default">
+            <div class="panel-heading col-md-12">
+              <form class="form-inline pull-left" role="form">
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon">Search</div>
+                    <input class="form-control input-sm" id="searchSupplier" placeholder="Search" ng-model="ctrl.nav_list.suppliers.searchText">
+                  </div>
+                </div>
+              </form>
+              <div class="btn btn-success pull-right btn-sm" ng-click="ctrl.nav_list.suppliers.addSupplier()">Add</div>
+            </div>
+            <div class="panel-body col-double">
+              <div class="col-md-{{ ctrl.nav_list.suppliers.rows() }}">
+                <table class="table" ng-if="ctrl.nav_list.suppliers.suppliers_list">
+                  <thead>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th class="text-center col-md-1">Info</th>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="supplier in ctrl.nav_list.suppliers.suppliers_list | filter : ctrl.nav_list.suppliers.searchText">
+                      <td>
+                        {{ supplier.first_name }}
+                      </td>
+                      <td>
+                        {{ supplier.last_name }}
+                      </td>
+                      <td class="text-center">
+                        <button type="button" title="View" class="btn btn-default btn-xs" ng-click="ctrl.nav_list.suppliers.viewSupplier(supplier)"><i class="fa fa-file-text-o"></i> Info</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="panel-body col-md-6" ng-show="ctrl.nav_list.suppliers.action">
+                <form role="form" name="supplierForm" ng-submit="supplierForm.$valid">
+                  <div class="col-md-12">
+                    <div class="btn btn-primary btn-xs pull-right" ng-click="ctrl.nav_list.suppliers.cancel()">
+                      <i class="fa fa-times"></i>
+                    </div>
+                    <div class="form-group">
+                      <label for="first_name">First name</label>
+                      <input class="form-control input-sm" id="supplierForm_first_name" ng-model="ctrl.nav_list.suppliers.supplier.first_name" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="last_name">Last name</label>
+                      <input class="form-control input-sm" id="supplierForm_last_name" ng-model="ctrl.nav_list.suppliers.supplier.last_name" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="phone">Phone</label>
+                      <input class="form-control input-sm" id="supplierForm_phone" ng-model="ctrl.nav_list.suppliers.supplier.phone" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="country">Country</label>
+                      <input class="form-control input-sm" id="supplierForm_country" ng-model="ctrl.nav_list.suppliers.supplier.country" required>
+                    </div>
+                    <div class="form-group">
+                      <label for="address">Address</label>
+                      <input class="form-control input-sm" id="supplierForm_address" ng-model="ctrl.nav_list.suppliers.supplier.address" required>
+                    </div>
+                  </div>
+                  <div ng-hide="ctrl.nav_list.suppliers.action == 'edit' || ctrl.nav_list.suppliers.action == 'add'">
+                    <div class="btn-group col-md-12">
+                      <div class="btn btn-default col-md-6" ng-click="ctrl.nav_list.suppliers.editSupplier()">
+                        <i class="fa fa-pencil"></i> Edit
+                      </div>
+                      <div class="btn btn-danger col-md-6" ng-click="ctrl.nav_list.suppliers.delete()">
+                        <i class="fa fa-trash"></i> Delete
+                      </div>
+                    </div>
+                  </div>
+                  <div ng-show="ctrl.nav_list.suppliers.action == 'edit'">
+                    <div class="btn-group col-md-12">
+                      <button type="button" class="btn btn-default col-md-6" ng-click="ctrl.nav_list.suppliers.cancel()"><i class="fa fa-times"></i> Cancel</button>
+                      <button type="button" class="btn btn-success col-md-6" ng-click="ctrl.nav_list.suppliers.edit()"><i class="fa fa-check"> Save</i></button>
+                    </div>
+                  </div>
+                  <div ng-show="ctrl.nav_list.suppliers.action == 'add'">
+                    <div class="btn-group col-md-12">
+                      <button type="button" class="btn btn-default col-md-6" ng-click="ctrl.nav_list.suppliers.cancel()"><i class="fa fa-times"></i> Cancel</button>
+                      <button type="button" class="btn btn-success col-md-6" ng-click="ctrl.nav_list.suppliers.add()"><i class="fa fa-plus"> Add</i></button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ITEMS -->
+        <div ng-if="ctrl.nav_current.name == 'items'">
+          <div class="panel panel-default">
+            <div class="panel-heading col-md-12">
+              <form class="form-inline pull-left" role="form">
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon">Search</div>
+                    <input class="form-control input-sm" id="searchItem" placeholder="Search" ng-model="ctrl.nav_list.items.searchText">
+                  </div>
+                </div>
+              </form>
+              <div class="btn btn-success pull-right btn-sm" ng-click="ctrl.nav_list.items.addItem()">Add</div>
+            </div>
+            <div class="panel-body col-md-12" ng-show="ctrl.nav_list.items.action == 'add' || ctrl.nav_list.items.action == 'view'">
+              <form class="form-horizontal" role="form" name="addForm" ng-submit="addForm.$valid">
+                <div class="form-group">
+                  <label for="addItem_name" class="col-sm-2 control-label">Name</label>
+                  <div class="col-sm-10">
+                    <input class="form-control input-sm" id="addItem_name" ng-model="ctrl.nav_list.items.item.name" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="addItem_description" class="col-sm-2 control-label">Description</label>
+                  <div class="col-sm-10">
+                    <textarea class="form-control input-sm" id="addItem_description" ng-model="ctrl.nav_list.items.item.description"  style="resize: vertical;" rows="3" required></textarea>
+                  </div>
+                </div>
+                <div class="form-group col-sm-6">
+                  <label for="addItem_price" class="col-sm-4 control-label">Price</label>
+                  <div class="input-group col-sm-8">
+                    <input class="form-control input-sm" id="addItem_price" ng-model="ctrl.nav_list.items.item.price" required>
+                    <div class="input-group-addon">$</div>
+                  </div>
+                </div>
+                <div class="form-group col-sm-6">
+                  <label for="addItem_price" class="col-sm-4 control-label">Quantity</label>
+                  <div class="input-group col-sm-8">
+                    <input class="form-control input-sm" id="addItem_quantity" ng-model="ctrl.nav_list.items.item.quantity" required>
+                  </div>
+                </div>
+                <div class="form-group col-sm-6">
+                  <label for="addItem_reorder_level" class="col-sm-4 control-label">Reorder level</label>
+                  <div class="input-group col-sm-8">
+                    <input class="form-control input-sm" id="addItem_reorder_level" ng-model="ctrl.nav_list.items.item.reorder_level" required>
+                    <div class="input-group-addon">$</div>
+                  </div>
+                </div>
+                <div class="form-group col-sm-6">
+                  <label for="addItem_price" class="col-sm-4 control-label">Reorder quantity</label>
+                  <div class="input-group col-sm-8">
+                    <input class="form-control input-sm" id="addItem_reorder_quantity" ng-model="ctrl.nav_list.items.item.reorder_quantity" required>
+                  </div>
+                </div>
+                <div class="form-group col-sm-6">
+                  <label for="addItem_price" class="col-sm-4 control-label">Supplier</label>
+                  <div class="input-group col-sm-8">
+                    <select class="form-control input-sm" id="addItem_supplier" ng-model="ctrl.nav_list.items.item.supplier_id" required>
+                      <option ng-repeat="supplier in ctrl.nav_list.items.suppliers_list" value="{{ supplier.id }}">{{ supplier.first_name }} {{ supplier.last_name }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group col-sm-6">
+                  <label for="addItem_price" class="col-sm-4 control-label">Category</label>
+                  <div class="input-group col-sm-8">
+                    <select class="form-control input-sm" id="addItem_category" ng-model="ctrl.nav_list.items.item.category_id" required>
+                      <option ng-repeat="category in ctrl.nav_list.items.categories_list" value="{{ category.id }}">{{ category.name }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10" ng-if="ctrl.nav_list.items.action == 'add'">
+                    <div class="btn-toolbar pull-right" role="toolbar">
+                      <div class="btn-group" role="group">
+                        <div class="btn btn-default" ng-click="ctrl.nav_list.items.cancel()">Cancel</div>
+                      </div>
+                      <div class="btn-group" role="group">
+                        <button class="btn btn-success" ng-click="ctrl.nav_list.items.add()">Add</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-offset-2 col-sm-10" ng-if="ctrl.nav_list.items.action == 'view'">
+                    <div class="btn-toolbar pull-right" role="toolbar">
+                      <div class="btn-group" role="group">
+                        <div class="btn btn-default" ng-click="ctrl.nav_list.items.cancel()">Close</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <table class="table" ng-if="ctrl.nav_list.items.items_list">
+              <thead>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Supplier</th>
+              </thead>
+              <tbody>
+                <tr ng-repeat="item in ctrl.nav_list.items.items_list | filter : ctrl.nav_list.items.searchText" ng-click="ctrl.nav_list.items.viewItem(item)">
+                  <td>
+                    {{ item.name }}
+                  </td>
+                  <td>
+                    {{ item.category_name }}
+                  </td>
+                  <td>
+                    {{ item.price }}
+                  </td>
+                  <td>
+                    {{ item.supplier_first_name }} {{ item.supplier_last_name }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ORDERS -->
+        <div ng-if="ctrl.nav_current.name == 'orders'">
+          <div class="panel panel-default">
+            <div class="panel-heading col-md-12">
+              <form class="form-inline pull-left" role="form">
+                <div class="form-group">
+                  <div class="input-group">
+                    <div class="input-group-addon">Search</div>
+                    <input class="form-control input-sm" id="searchItem" placeholder="Search" ng-model="ctrl.nav_list.orders.searchText">
+                  </div>
+                </div>
+              </form>
+              <div class="btn btn-success pull-right btn-sm" ng-click="ctrl.nav_list.orders.addOrder()">Add</div>
+            </div>
+            <div class="panel-body col-md-12" ng-show="ctrl.nav_list.orders.action == 'add' || ctrl.nav_list.orders.action == 'view'">
+              <form class="form-horizontal" role="form" name="addForm" ng-submit="addForm.$valid">
+                <div class="form-group">
+                  <label for="addOrder_item_id" class="col-sm-2 control-label">Item</label>
+                  <div class="col-sm-10">
+                    <select class="form-control input-sm" id="addOrder_item_id" ng-model="ctrl.nav_list.orders.order.item_id" ng-change="ctrl.nav_list.orders.getItemPrice()" required>
+                      <option value="{{ item.id }}" ng-repeat="item in ctrl.nav_list.orders.items_list">{{ item.name }} | {{ item.supplier_first_name }} {{ item.supplier_last_name }}</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="addOrder_order_quantity" class="col-sm-2 control-label">Quantity</label>
+                  <div class="col-sm-10">
+                    <input class="form-control input-sm" id="addOrder_order_quantity" ng-model="ctrl.nav_list.orders.order.order_quantity" ng-change="ctrl.nav_list.orders.getItemPrice()" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="addOrder_price" class="col-sm-2 control-label">Price</label>
+                  <div class="col-sm-10">
+                    <span class="form-control-static" id="addOrder_price">{{ ctrl.nav_list.orders.order.price }}</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="addOrder_ship_method" class="col-sm-2 control-label">Ship method</label>
+                  <div class="col-sm-10">
+                    <select class="form-control input-sm" id="addOrder_ship_method" ng-model="ctrl.nav_list.orders.order.ship_method" required>
+                      <option value="courier">Courier</option>
+                      <option value="post">Post</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-offset-2 col-sm-10" ng-if="ctrl.nav_list.orders.action == 'add'">
+                    <div class="btn-toolbar pull-right" role="toolbar">
+                      <div class="btn-group" role="group">
+                        <div class="btn btn-default" ng-click="ctrl.nav_list.orders.cancel()">Cancel</div>
+                      </div>
+                      <div class="btn-group" role="group">
+                        <button class="btn btn-success" ng-click="ctrl.nav_list.orders.add()">Add</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-offset-2 col-sm-10" ng-if="ctrl.nav_list.orders.action == 'view'">
+                    <div class="btn-toolbar pull-right" role="toolbar">
+                      <div class="btn-group" role="group">
+                        <div class="btn btn-default" ng-click="ctrl.nav_list.orders.cancel()">Cancel</div>
+                      </div>
+                      <div class="btn-group" role="group" ng-if="ctrl.nav_list.orders.order.status == 'pending'">
+                        <input class="form-control input-sm" id="addOrder_recieved_quantity" ng-model="ctrl.nav_list.orders.order.recieved_quantity" required>
+                      </div>
+                      <div class="btn-group" role="group" ng-if="ctrl.nav_list.orders.order.status == 'pending'">
+                        <button class="btn btn-success" ng-click="ctrl.nav_list.orders.recieve()">Recieve</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <table class="table" ng-if="ctrl.nav_list.orders.orders_list">
+              <thead>
+                <th>Item</th>
+                <th>Supplier</th>
+                <th>Order date</th>
+                <th>Ship method</th>
+                <th>Status</th>
+              </thead>
+              <tbody>
+                <tr ng-repeat="order in ctrl.nav_list.orders.orders_list | filter : ctrl.nav_list.orders.searchText" ng-click="ctrl.nav_list.orders.viewOrder(order)">
+                  <td>
+                    {{ order.item.name }}
+                  </td>
+                  <td>
+                    {{ order.item.supplier_first_name }} {{ order.item.supplier_last_name }}
+                  </td>
+                  <td>
+                    {{ order.order_date }}
+                  </td>
+                  <td>
+                    {{ order.ship_method }}
+                  </td>
+                  <td>
+                    {{ order.status }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-success text-center col-md-12" role="alert" ng-show="ctrl.message">
+        {{ ctrl.message }}
+      </div>
+      <div class="alert alert-danger text-center col-md-12" role="alert" ng-show="ctrl.error">
+        {{ ctrl.error }}
+      </div>
+    </div>
+    <script src="libs/js/angular.min.js"></script>
+    <script src="libs/js/jquery.min.js"></script>
+    <script src="libs/js/bootstrap.min.js"></script>
+    <script src="js/home.js"></script>
+  </body>
+</html>
